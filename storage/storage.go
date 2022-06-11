@@ -38,7 +38,7 @@ func NewDriverStorage(d internal.Driver) Storage {
 func (m *mStorage) Insert(model interface{}) (interface{}, error) {
 	ctx, cancel, err := m.driver.Connect()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	defer m.driver.Close(ctx, cancel)
 	return m.driver.Insert(ctx, model)
@@ -47,7 +47,7 @@ func (m *mStorage) Insert(model interface{}) (interface{}, error) {
 func (m *mStorage) Retrieve() ([]InvoiceData, error) {
 	ctx, cancel, err := m.driver.Connect()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	defer m.driver.Close(ctx, cancel)
 	cursor, errFind := m.driver.Retrieve(ctx)
