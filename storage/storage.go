@@ -1,9 +1,6 @@
 package storage
 
 import (
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"spin.sample.trial/common"
 	"spin.sample.trial/storage/internal"
 )
 
@@ -35,13 +32,9 @@ func (m *mStorage) Insert(model interface{}) (interface{}, error) {
 	if err != nil {
 		panic(err)
 	}
-	db := common.GetEnv("DB", "test")
-	col := common.GetEnv("COLLECTION", "mycol")
 	defer m.driver.Close(client, ctx, cancel)
-	collection := client.Database(db).Collection(col)
-	insert, errInsert := collection.InsertOne(ctx, model)
+	return m.driver.Insert(ctx, client, model)
 
-	return insert.InsertedID, errInsert
 }
 
 func (m *mStorage) Retrieve() ([]InvoiceData, error) {
@@ -49,12 +42,8 @@ func (m *mStorage) Retrieve() ([]InvoiceData, error) {
 	if err != nil {
 		panic(err)
 	}
-	db := common.GetEnv("DB", "test")
-	col := common.GetEnv("COLLECTION", "mycol")
 	defer m.driver.Close(client, ctx, cancel)
-	options := options.Find()
-	collection := client.Database(db).Collection(col)
-	cursor, errFind := collection.Find(ctx, bson.D{{}}, options)
+	cursor, errFind := m.driver.Retrieve(ctx, client)
 	if errFind != nil {
 		return nil, errFind
 	}
