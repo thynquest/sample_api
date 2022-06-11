@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"u-trade.sample.trial/model"
-	"u-trade.sample.trial/service"
+	"spin.sample.trial/model"
+	"spin.sample.trial/service"
 )
 
 type InvoiceHandler struct {
@@ -31,7 +31,7 @@ func (i *InvoiceHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": errResult.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusCreated, result)
 }
 
 func (i *InvoiceHandler) Retrieve(c *gin.Context) {

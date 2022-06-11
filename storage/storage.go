@@ -3,8 +3,8 @@ package storage
 import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"u-trade.sample.trial/common"
-	"u-trade.sample.trial/storage/internal"
+	"spin.sample.trial/common"
+	"spin.sample.trial/storage/internal"
 )
 
 type InvoiceData struct {

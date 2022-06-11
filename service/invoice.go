@@ -1,7 +1,7 @@
 package service
 
 import (
-	"u-trade.sample.trial/storage"
+	"spin.sample.trial/storage"
 )
 
 type Invoice interface {

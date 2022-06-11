@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"u-trade.sample.trial/common"
-	"u-trade.sample.trial/routes"
-	"u-trade.sample.trial/service"
-	"u-trade.sample.trial/storage"
+	"spin.sample.trial/common"
+	"spin.sample.trial/routes"
+	"spin.sample.trial/service"
+	"spin.sample.trial/storage"
 )
 
 func main() {

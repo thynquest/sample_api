@@ -1,4 +1,4 @@
-module u-trade.sample.trial
+module spin.sample.trial
 
 go 1.17
 

@@ -5,6 +5,12 @@ BUILD_NAME := "invoice-app"
 build:
 	go build -mod=vendor -o bin/$(BUILD_NAME) $(MAIN_GO)
 
+
+.PHONY: test
+test: 
+	go test -race $(go list ./... | grep -v /vendor/) -v 
+
+
 .PHONY: start
 start: build startmongo
 	./bin/$(BUILD_NAME)
