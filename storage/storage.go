@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"context"
+
 	"spin.sample.trial/storage/internal"
 )
 
@@ -52,6 +54,7 @@ func (m *mStorage) Retrieve() ([]InvoiceData, error) {
 	if errFind != nil {
 		return nil, errFind
 	}
+	defer cursor.Close(context.TODO())
 	var results []InvoiceData
 	for cursor.Next(ctx) {
 		var item InvoiceData

@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"bytes"
@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"spin.sample.trial/handler"
 	"spin.sample.trial/service"
 	"spin.sample.trial/storage"
 )
@@ -40,12 +39,12 @@ func (m *MockStorage) Retrieve() ([]storage.InvoiceData, error) {
 func TestCreateInvoice(t *testing.T) {
 	ms := &MockStorage{}
 	invoiceSvc := service.NewInvoiceSvc(ms)
-	testHandler := &handler.InvoiceHandler{
+	testHandler := &InvoiceHandler{
 		Service: invoiceSvc,
 	}
 	r := SetUpRouter()
 	r.POST("/invoice", testHandler.Create)
-	payload := handler.Invoice{
+	payload := Invoice{
 		Amount:    1234,
 		Company:   "myTestCompany",
 		IssueDate: "2022-04-25",
@@ -63,7 +62,7 @@ func TestCreateInvoice(t *testing.T) {
 func TestRetrieveInvoice(t *testing.T) {
 	ms := &MockStorage{}
 	invoiceSvc := service.NewInvoiceSvc(ms)
-	testHandler := &handler.InvoiceHandler{
+	testHandler := &InvoiceHandler{
 		Service: invoiceSvc,
 	}
 	r := SetUpRouter()
@@ -71,7 +70,7 @@ func TestRetrieveInvoice(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/invoices", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
-	var invoices []handler.Invoice
+	var invoices []Invoice
 	json.Unmarshal(w.Body.Bytes(), &invoices)
 	if http.StatusOK != w.Code {
 		t.Errorf("the status should be %v got %v", http.StatusCreated, w.Code)

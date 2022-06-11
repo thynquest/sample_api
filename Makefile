@@ -8,7 +8,8 @@ build:
 
 .PHONY: test
 test: 
-	go test -race $(go list ./... | grep -v /vendor/) -v 
+	go test -race ./... -v -coverprofile=coverage.out
+	go tool cover -func=coverage.out
 
 
 .PHONY: start

@@ -1,0 +1,16 @@
+mode: atomic
+spin.sample.trial/service/invoice.go:16.53,20.2 1 2
+spin.sample.trial/service/invoice.go:22.103,30.22 3 1
+spin.sample.trial/service/invoice.go:33.2,33.29 1 1
+spin.sample.trial/service/invoice.go:30.22,32.3 1 0
+spin.sample.trial/service/invoice.go:36.61,39.2 2 1
+spin.sample.trial/handler/invoice.go:22.49,25.16 3 1
+spin.sample.trial/handler/invoice.go:29.2,30.22 2 1
+spin.sample.trial/handler/invoice.go:34.2,34.36 1 1
+spin.sample.trial/handler/invoice.go:25.16,28.3 2 0
+spin.sample.trial/handler/invoice.go:30.22,33.3 2 0
+spin.sample.trial/handler/invoice.go:37.51,39.23 2 1
+spin.sample.trial/handler/invoice.go:43.2,44.29 2 1
+spin.sample.trial/handler/invoice.go:53.2,53.32 1 1
+spin.sample.trial/handler/invoice.go:39.23,42.3 2 0
+spin.sample.trial/handler/invoice.go:44.29,52.3 2 1

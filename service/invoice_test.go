@@ -37,7 +37,7 @@ func (m *mockDriver) Insert(ctx context.Context, data interface{}) (interface{},
 
 func (m *mockDriver) Retrieve(ctx context.Context) (*mongo.Cursor, error) {
 	options := options.Find()
-	cursor, errFind := m.mock.Coll.Find(ctx, bson.D{{}}, options)
+	cursor, errFind := m.mock.Coll.Find(ctx, bson.D{{Key: "Amount", Value: 12445}}, options)
 	return cursor, errFind
 }
 
@@ -59,30 +59,32 @@ func TestRetrieveInvoice(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 	defer mt.Close()
 	mt.Run("TestRetrieveInvoice", func(mt *mtest.T) {
-		find := mtest.CreateCursorResponse(
+		first := mtest.CreateCursorResponse(
 			1,
-			"mycol",
+			"test.mycol",
 			mtest.FirstBatch,
 			bson.D{
-				{"Amount", 5000},
+				{Key: "Amount", Value: 12345},
+				{Key: "Company", Value: "mycompany"},
+				{Key: "IssueDate", Value: "2022-04-25"},
+				{Key: "DueDate", Value: "2022-04-29"},
 			})
-		getMore := mtest.CreateCursorResponse(
-			1,
-			"mycol",
+		second := mtest.CreateCursorResponse(
+			2,
+			"test.mycol",
 			mtest.NextBatch,
-			bson.D{{
-				"Company", "company",
-			}})
-		stopCursor := mtest.CreateCursorResponse(
-			0,
-			"mycol",
-			mtest.NextBatch)
-		mt.AddMockResponses(find, getMore, stopCursor)
+			bson.D{
+				{Key: "Amount", Value: 12445},
+				{Key: "Company", Value: "myothercompany"},
+				{Key: "IssueDate", Value: "2022-04-25"},
+				{Key: "DueDate", Value: "2022-04-29"},
+			})
+		mt.AddMockResponses(first, second)
 		driver := newMockDriver(mt)
 		st := storage.NewDriverStorage(driver)
 		svc := NewInvoiceSvc(st)
-		cursor, err := svc.Retrieve()
-		assert.Equal(mt, true, cursor)
+		datas, err := svc.Retrieve()
+		assert.Equal(mt, 2, len(datas))
 		assert.Nil(mt, err)
 	})
 }
