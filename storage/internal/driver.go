@@ -11,14 +11,15 @@ import (
 )
 
 type Driver interface {
-	Connect() (*mongo.Client, context.Context, context.CancelFunc, error)
-	Close(client *mongo.Client, ctx context.Context, cancel context.CancelFunc)
-	Insert(ctx context.Context, client *mongo.Client, data interface{}) (interface{}, error)
-	Retrieve(ctx context.Context, client *mongo.Client) (*mongo.Cursor, error)
+	Connect() (context.Context, context.CancelFunc, error)
+	Close(ctx context.Context, cancel context.CancelFunc)
+	Insert(ctx context.Context, data interface{}) (interface{}, error)
+	Retrieve(ctx context.Context) (*mongo.Cursor, error)
 }
 
 type mongoDriver struct {
-	uri string
+	uri    string
+	client *mongo.Client
 }
 
 func NewDriver(uri string) Driver {
@@ -27,26 +28,27 @@ func NewDriver(uri string) Driver {
 	}
 }
 
-func (m *mongoDriver) Connect() (*mongo.Client, context.Context, context.CancelFunc, error) {
+func (m *mongoDriver) Connect() (context.Context, context.CancelFunc, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(m.uri))
-	return client, ctx, cancel, err
+	m.client = client
+	return ctx, cancel, err
 }
 
-func (m *mongoDriver) Close(client *mongo.Client, ctx context.Context, cancel context.CancelFunc) {
+func (m *mongoDriver) Close(ctx context.Context, cancel context.CancelFunc) {
 	defer cancel()
 
 	defer func() {
-		if err := client.Disconnect(ctx); err != nil {
+		if err := m.client.Disconnect(ctx); err != nil {
 			panic(err)
 		}
 	}()
 }
 
-func (m *mongoDriver) Insert(ctx context.Context, client *mongo.Client, data interface{}) (interface{}, error) {
+func (m *mongoDriver) Insert(ctx context.Context, data interface{}) (interface{}, error) {
 	db := common.GetEnv("DB", "test")
 	col := common.GetEnv("COLLECTION", "mycol")
-	collection := client.Database(db).Collection(col)
+	collection := m.client.Database(db).Collection(col)
 	insert, errInsert := collection.InsertOne(ctx, data)
 	if errInsert != nil {
 		return nil, errInsert
@@ -54,11 +56,11 @@ func (m *mongoDriver) Insert(ctx context.Context, client *mongo.Client, data int
 	return insert.InsertedID, nil
 }
 
-func (m *mongoDriver) Retrieve(ctx context.Context, client *mongo.Client) (*mongo.Cursor, error) {
+func (m *mongoDriver) Retrieve(ctx context.Context) (*mongo.Cursor, error) {
 	db := common.GetEnv("DB", "test")
 	col := common.GetEnv("COLLECTION", "mycol")
 	options := options.Find()
-	collection := client.Database(db).Collection(col)
+	collection := m.client.Database(db).Collection(col)
 	cursor, errFind := collection.Find(ctx, bson.D{{}}, options)
 	return cursor, errFind
 }

@@ -20,30 +20,35 @@ type mStorage struct {
 	driver internal.Driver
 }
 
-func NewStorage(uri string) Storage {
+func NewUriStorage(uri string) Storage {
 	driver := internal.NewDriver(uri)
 	return &mStorage{
 		driver: driver,
 	}
 }
 
+func NewDriverStorage(d internal.Driver) Storage {
+	return &mStorage{
+		driver: d,
+	}
+}
+
 func (m *mStorage) Insert(model interface{}) (interface{}, error) {
-	client, ctx, cancel, err := m.driver.Connect()
+	ctx, cancel, err := m.driver.Connect()
 	if err != nil {
 		panic(err)
 	}
-	defer m.driver.Close(client, ctx, cancel)
-	return m.driver.Insert(ctx, client, model)
-
+	defer m.driver.Close(ctx, cancel)
+	return m.driver.Insert(ctx, model)
 }
 
 func (m *mStorage) Retrieve() ([]InvoiceData, error) {
-	client, ctx, cancel, err := m.driver.Connect()
+	ctx, cancel, err := m.driver.Connect()
 	if err != nil {
 		panic(err)
 	}
-	defer m.driver.Close(client, ctx, cancel)
-	cursor, errFind := m.driver.Retrieve(ctx, client)
+	defer m.driver.Close(ctx, cancel)
+	cursor, errFind := m.driver.Retrieve(ctx)
 	if errFind != nil {
 		return nil, errFind
 	}
